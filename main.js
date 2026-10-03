@@ -248,10 +248,9 @@ function renderVenn(source,host){
     const shadow=el('g',{class:'visual-charts-venn-shadow-piece'},depthLayer);
     const face=el('g',{class:'visual-charts-venn-piece',tabindex:'0',
       role:'button','aria-label':region.name+' region','aria-pressed':'false'},faceLayer);
-    const lift='5px';
+    const lift=Math.max(6,depth+2)+'px';
     shadow.style.setProperty('--venn-lift',lift);
     face.style.setProperty('--venn-lift',lift);
-    face.style.setProperty('--venn-side-color',darkenColor(region.color,.70));
     if(raised&&depth>0){
       // Solid extrusion: overlapping sub-pixel silhouettes share one uniform
       // side color, eliminating the visible bands of the former two slabs.
@@ -271,13 +270,14 @@ function renderVenn(source,host){
     const toggle=()=>{
       const next=selectedRegion===piece?null:piece;
       if(selectedRegion){
-        selectedRegion.face.classList.remove('is-selected');
+        for(const node of [selectedRegion.face,selectedRegion.shadow])node.classList.remove('is-selected');
         selectedRegion.face.setAttribute('aria-pressed','false');
       }
       selectedRegion=next;
       if(next){
-        next.face.classList.add('is-selected');
+        for(const node of [next.face,next.shadow])node.classList.add('is-selected');
         next.face.setAttribute('aria-pressed','true');
+        depthLayer.appendChild(next.shadow);
         faceLayer.appendChild(next.face);
       }else {
         regionGroups.forEach(item=>depthLayer.appendChild(item.shadow));
