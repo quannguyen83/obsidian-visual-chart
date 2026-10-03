@@ -39,3 +39,23 @@ data:
 - No third-party runtime libraries
 
 This is an early local prototype, not an official Obsidian community release. The `tilt` input is currently reserved; rendering stays circular/top-down.
+
+## World / Machine diagram
+
+Use the second, editable SVG renderer in a note:
+
+````markdown
+```world-machine
+title: Requirements are about the real world.
+environment: Environment|real world
+system: System
+phenomena: Phenomena of|the real world
+shared: Shared|phenomena
+sensors: Sensors and|actuators
+requirement: The reverse thrust shall be enabled if and only if the aircraft is on ground.
+knowledge: If the aircraft is on ground, wheel rotation impulses exceed x per sec.
+specification: The reverse thrust shall be enabled if and only if wheel rotation impulses exceed x per sec.
+```
+````
+
+Each field is optional. Use `|` to insert a manual line break in diagram labels. The SVG remains theme-aware and scales to the note width, with horizontal scrolling on narrower screens.

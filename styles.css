@@ -32,3 +32,10 @@
 .visual-charts-tooltip-main { display:flex; align-items:baseline; gap:9px; }
 .visual-charts-tooltip-percent { font-size:1.7rem; font-weight:750; line-height:1.1; font-variant-numeric:tabular-nums; }
 .visual-charts-tooltip-value { color:var(--text-muted); font-size:.78rem; }
+
+/* Editable World / Machine diagram. */
+.visual-charts-world-machine {max-width:980px;overflow-x:auto;}
+.visual-charts-world-svg {display:block;width:100%;min-width:580px;height:auto;overflow:visible;}
+.visual-charts-world-text {font-family:var(--font-text),sans-serif;}
+.visual-charts-world-card {stroke:rgba(0,0,0,.09);stroke-width:1;}
+.visual-charts-world-arrow {color:var(--text-normal);}

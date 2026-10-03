@@ -157,8 +157,86 @@ function render(source,host){
     item.createSpan({text:d.label+' · '+d.value});
   });
 }
+
+function renderWorldMachine(source,host){
+  host.empty();host.addClass('visual-charts','visual-charts-world-machine');
+  const cfg={
+    title:'Requirements are about the real world.',
+    environment:'Environment|real world',system:'System',
+    phenomena:'Phenomena of|the real world',shared:'Shared|phenomena',
+    sensors:'Sensors and|actuators',
+    requirement:'The reverse thrust shall be enabled if and only if the aircraft is on ground.',
+    knowledge:'If the aircraft is on ground, wheel rotation impulses exceed x per sec.',
+    specification:'The reverse thrust shall be enabled if and only if wheel rotation impulses exceed x per sec.'
+  };
+  for(const raw of source.split(/\r?\n/)){
+    const line=raw.trim();if(!line||line.startsWith('#'))continue;
+    const match=line.match(/^([a-zA-Z]+)\s*:\s*(.*)$/);
+    if(match&&Object.prototype.hasOwnProperty.call(cfg,match[1])){
+      cfg[match[1]]=match[2].replace(/^['"]|['"]$/g,'');
+    }
+  }
+  const svg=el('svg',{viewBox:'0 0 980 650',role:'img','aria-label':cfg.title,
+    class:'visual-charts-world-svg'},host);
+  const defs=el('defs',{},svg),marker=el('marker',{id:'wm-arrow-'+Math.random().toString(36).slice(2),
+    viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);
+  el('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:'currentColor'},marker);
+  const arrow='url(#'+marker.getAttribute('id')+')';
+  const text=(x,y,str,size=19,weight=500,color='currentColor',anchor='start',parent=svg)=>{
+    const t=el('text',{x,y,fill:color,'font-size':size,'font-weight':weight,
+      'text-anchor':anchor,class:'visual-charts-world-text'},parent);
+    String(str).split('|').forEach((line,i)=>{const s=el('tspan',{x,dy:i?'1.18em':0},t);s.textContent=line;});
+    return t;
+  };
+  const line=(x1,y1,x2,y2)=>el('line',{x1,y1,x2,y2,stroke:'currentColor','stroke-width':1.65,
+    'marker-end':arrow,class:'visual-charts-world-arrow'},svg);
+  const card=(x,y,w,h,label,color)=>{
+    el('rect',{x,y,width:w,height:h,rx:8,fill:color,class:'visual-charts-world-card'},svg);
+    text(x+13,y+25,label,18,650,'#272727');
+  };
+  text(490,47,cfg.title,29,750,'currentColor','middle');
+  // The two transparent domains retain a clearly legible shared region.
+  el('ellipse',{cx:329,cy:268,rx:249,ry:124,fill:'#bcbcbc','fill-opacity':'.62',
+    stroke:'currentColor','stroke-width':'1.6'},svg);
+  el('ellipse',{cx:656,cy:268,rx:235,ry:107,fill:'#8789eb','fill-opacity':'.79',
+    stroke:'currentColor','stroke-width':'1.6'},svg);
+  text(288,258,cfg.environment,31,630,'#252525','middle');
+  text(697,277,cfg.system,31,630,'#202038','middle');
+  card(38,82,220,64,cfg.phenomena,'#ffe7da');
+  card(383,75,185,65,cfg.shared,'#ffe7da');
+  card(716,82,219,65,cfg.sensors,'#fff4d1');
+  line(256,136,262,187);
+  line(476,140,499,250);
+  line(726,143,539,246);
+  // Examples are wrapped as foreignObject-free SVG paragraphs for portability.
+  const example=(x,y,w,heading,body)=>{
+    const g=el('g',{},svg);
+    el('rect',{x,y,width:w,height:155,rx:12,fill:'var(--background-secondary)',
+      stroke:'var(--background-modifier-border)'},g);
+    text(x+14,y+27,heading,19,750,'#df8951','start',g);
+    const words=body.split(/\s+/);let lines=[],current='';
+    for(const word of words){
+      if((current+' '+word).trim().length>31){lines.push(current);current=word;}
+      else current=(current+' '+word).trim();
+    }if(current)lines.push(current);
+    text(x+14,y+57,lines.slice(0,4).join('|'),16,450,'currentColor','start',g);
+  };
+  line(185,416,294,360);
+  line(482,416,412,365);
+  line(795,416,696,354);
+  example(20,425,293,'Requirements',cfg.requirement);
+  example(344,425,293,'World Knowledge',cfg.knowledge);
+  example(668,425,293,'Specification',cfg.specification);
+  text(490,624,'World / Machine · Requirements Engineering',13,450,
+    'var(--text-muted)','middle');
+}
+
 module.exports=class VisualCharts extends Plugin {
   onload(){
+    this.registerMarkdownCodeBlockProcessor('world-machine',(source,el)=>{
+      try{renderWorldMachine(source,el);}
+      catch(error){el.empty();el.createEl('pre',{text:'World / Machine: '+error.message,cls:'visual-charts-error'});}
+    });
     this.registerMarkdownCodeBlockProcessor('visual-chart',(source,el)=>{
       try{render(source,el);}
       catch(error){el.empty();el.createEl('pre',{text:'Visual Charts: '+error.message,cls:'visual-charts-error'});}
