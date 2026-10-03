@@ -261,6 +261,19 @@ function renderVenn(source,host){
           transform:'translate(0 '+(depth*i/steps).toFixed(3)+')',
           fill:sideColor,class:'visual-charts-venn-piece-depth'},shadow);
       }
+      // Outer visible rims, not the internal intersection seam.
+      // Join the two outer endpoints with one continuous curved side wall.
+      const outerArcs=region.name==='environment' ? [[A,ta,Math.PI]] :
+        region.name==='system' ? [[B,0,tb]] :
+        [[A,0,ta],[B,tb,Math.PI]];
+      for(const [ellipse,from,to] of outerArcs){
+        const rim=boundary(ellipse,from,to);
+        const top=rim.map(p=>p.join(' '));
+        const bottom=rim.slice().reverse().map(p=>p[0]+' '+(Number(p[1])+depth).toFixed(3));
+        const wall='M '+top.join(' L ')+' L '+bottom.join(' L ')+' Z';
+        el('path',{d:wall,fill:sideColor,stroke:'none',
+          class:'visual-charts-venn-outer-wall'},face);
+      }
     }
     el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
       'stroke-width':1.35,'stroke-linejoin':'round',

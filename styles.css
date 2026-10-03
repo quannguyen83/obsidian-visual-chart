@@ -61,3 +61,7 @@
 .visual-charts-venn-shadow-piece { pointer-events:none; transition:transform 160ms ease; }
 .visual-charts-venn-shadow-piece.is-selected { transform:translateY(calc(-1 * var(--venn-lift,10px))); }
 @media(prefers-reduced-motion:reduce) { .visual-charts-venn-shadow-piece {transition:none;} }
+
+/* Outer connecting wall is needed only when its region is lifted. */
+.visual-charts-venn .visual-charts-venn-outer-wall { display:none; pointer-events:none; }
+.visual-charts-venn .visual-charts-venn-piece.is-selected .visual-charts-venn-outer-wall { display:block; }
