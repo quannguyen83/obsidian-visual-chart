@@ -237,20 +237,40 @@ function renderVenn(source,host){
       d:polygon([boundary(A,-ta,ta),boundary(B,tb,2*Math.PI-tb)])}
   ];
   const regionLayer=el('g',{class:'visual-charts-venn-regions'},svg);
-  if(raised&&depth>0){
-    // Like Pie Chart: two continuous silhouette layers, painted BEFORE all top faces.
-    for(const region of regions){
-      const g=el('g',{class:'visual-charts-venn-depth'},regionLayer);
-      el('path',{d:region.d,transform:'translate(0 '+depth+')',
-        fill:darkenColor(region.color,.61)},g);
-      el('path',{d:region.d,transform:'translate(0 '+(depth*.5)+')',
-        fill:darkenColor(region.color,.79)},g);
-    }
-  }
+  const regionGroups=[];
+  let selectedRegion=null;
   for(const region of regions){
+    // Group the face AND its depth: they lift as one physical slice.
+    const g=el('g',{class:'visual-charts-venn-piece',tabindex:'0',
+      role:'button','aria-label':region.name+' region','aria-pressed':'false'},regionLayer);
+    g.style.setProperty('--venn-lift',Math.max(6,depth+2)+'px');
+    if(raised&&depth>0){
+      el('path',{d:region.d,transform:'translate(0 '+depth+')',
+        fill:darkenColor(region.color,.61),class:'visual-charts-venn-piece-depth'},g);
+      el('path',{d:region.d,transform:'translate(0 '+(depth*.5)+')',
+        fill:darkenColor(region.color,.79),class:'visual-charts-venn-piece-depth'},g);
+    }
     el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
       'stroke-width':1.35,'stroke-linejoin':'round',
-      class:'visual-charts-venn-region visual-charts-venn-'+region.name},regionLayer);
+      class:'visual-charts-venn-region visual-charts-venn-'+region.name},g);
+    regionGroups.push(g);
+    const toggle=()=>{
+      const next=selectedRegion===g?null:g;
+      if(selectedRegion){
+        selectedRegion.classList.remove('is-selected');
+        selectedRegion.setAttribute('aria-pressed','false');
+      }
+      selectedRegion=next;
+      if(next){
+        next.classList.add('is-selected');
+        next.setAttribute('aria-pressed','true');
+        regionLayer.appendChild(next);
+      }else regionGroups.forEach(item=>regionLayer.appendChild(item));
+    };
+    g.addEventListener('click',toggle);
+    g.addEventListener('keydown',event=>{
+      if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}
+    });
   }
   text(490,47,cfg.title,29,750,'currentColor','middle');
   text(288,258,cfg.environment,31,630,'#252525','middle');

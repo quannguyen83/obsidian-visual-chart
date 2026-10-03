@@ -66,3 +66,5 @@ Each field is optional. Use `|` to insert a manual line break in diagram labels.
 Venn supports `style: flat` (default) or `style: raised`, with a configurable `depth` (0–14px) for layered ellipses and raised cards.
 
 In `style: raised`, Venn uses three separately rendered SVG regions (left-only, intersection, right-only), with a mixed-color overlap and layered depth. `style: flat` shows the same three regions without extrusion.
+
+Click any of the three Venn regions to lift it; click again to reset. Enter/Space work when the region is keyboard-focused.

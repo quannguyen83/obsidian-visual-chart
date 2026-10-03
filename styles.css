@@ -48,3 +48,11 @@
 /* Venn v0.7: three explicit regions, raised like the pie chart. */
 .visual-charts-venn-depth path:first-child {filter:drop-shadow(0 3px 3px rgba(0,0,0,.20));}
 .visual-charts-venn-region {vector-effect:non-scaling-stroke;}
+
+/* Venn v0.7.1: each of the three regions is a clickable raised piece. */
+.visual-charts-venn-piece { cursor:pointer; transition:transform 160ms ease,filter 160ms ease; }
+.visual-charts-venn-piece:hover:not(.is-selected) { transform:translateY(-3px); }
+.visual-charts-venn-piece.is-selected { transform:translateY(calc(-1 * var(--venn-lift,10px))); filter:drop-shadow(0 7px 5px rgba(0,0,0,.26)); }
+.visual-charts-venn-piece:focus-visible { outline:none; filter:drop-shadow(0 0 3px var(--interactive-accent)); }
+.visual-charts-venn-piece.is-selected:focus-visible { filter:drop-shadow(0 7px 5px rgba(0,0,0,.26)); }
+@media(prefers-reduced-motion:reduce) { .visual-charts-venn-piece {transition:none;} }
