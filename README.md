@@ -40,12 +40,13 @@ data:
 
 This is an early local prototype, not an official Obsidian community release. The `tilt` input is currently reserved; rendering stays circular/top-down.
 
-## World / Machine diagram
+## Venn diagram (World / Machine example)
 
-Use the second, editable SVG renderer in a note:
+Use the editable SVG Venn renderer in a note:
 
 ````markdown
-```world-machine
+```visual-chart
+type: venn
 title: Requirements are about the real world.
 environment: Environment|real world
 system: System

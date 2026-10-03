@@ -34,8 +34,8 @@
 .visual-charts-tooltip-value { color:var(--text-muted); font-size:.78rem; }
 
 /* Editable World / Machine diagram. */
-.visual-charts-world-machine {max-width:980px;overflow-x:auto;}
-.visual-charts-world-svg {display:block;width:100%;min-width:580px;height:auto;overflow:visible;}
-.visual-charts-world-text {font-family:var(--font-text),sans-serif;}
-.visual-charts-world-card {stroke:rgba(0,0,0,.09);stroke-width:1;}
-.visual-charts-world-arrow {color:var(--text-normal);}
+.visual-charts-venn {max-width:980px;overflow-x:auto;}
+.visual-charts-venn-svg {display:block;width:100%;min-width:580px;height:auto;overflow:visible;}
+.visual-charts-venn-text {font-family:var(--font-text),sans-serif;}
+.visual-charts-venn-card {stroke:rgba(0,0,0,.09);stroke-width:1;}
+.visual-charts-venn-arrow {color:var(--text-normal);}

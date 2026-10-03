@@ -158,8 +158,8 @@ function render(source,host){
   });
 }
 
-function renderWorldMachine(source,host){
-  host.empty();host.addClass('visual-charts','visual-charts-world-machine');
+function renderVenn(source,host){
+  host.empty();host.addClass('visual-charts','visual-charts-venn');
   const cfg={
     title:'Requirements are about the real world.',
     environment:'Environment|real world',system:'System',
@@ -177,21 +177,21 @@ function renderWorldMachine(source,host){
     }
   }
   const svg=el('svg',{viewBox:'0 0 980 650',role:'img','aria-label':cfg.title,
-    class:'visual-charts-world-svg'},host);
-  const defs=el('defs',{},svg),marker=el('marker',{id:'wm-arrow-'+Math.random().toString(36).slice(2),
+    class:'visual-charts-venn-svg'},host);
+  const defs=el('defs',{},svg),marker=el('marker',{id:'venn-arrow-'+Math.random().toString(36).slice(2),
     viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:7,markerHeight:7,orient:'auto-start-reverse'},defs);
   el('path',{d:'M 0 0 L 10 5 L 0 10 z',fill:'currentColor'},marker);
   const arrow='url(#'+marker.getAttribute('id')+')';
   const text=(x,y,str,size=19,weight=500,color='currentColor',anchor='start',parent=svg)=>{
     const t=el('text',{x,y,fill:color,'font-size':size,'font-weight':weight,
-      'text-anchor':anchor,class:'visual-charts-world-text'},parent);
+      'text-anchor':anchor,class:'visual-charts-venn-text'},parent);
     String(str).split('|').forEach((line,i)=>{const s=el('tspan',{x,dy:i?'1.18em':0},t);s.textContent=line;});
     return t;
   };
   const line=(x1,y1,x2,y2)=>el('line',{x1,y1,x2,y2,stroke:'currentColor','stroke-width':1.65,
-    'marker-end':arrow,class:'visual-charts-world-arrow'},svg);
+    'marker-end':arrow,class:'visual-charts-venn-arrow'},svg);
   const card=(x,y,w,h,label,color)=>{
-    el('rect',{x,y,width:w,height:h,rx:8,fill:color,class:'visual-charts-world-card'},svg);
+    el('rect',{x,y,width:w,height:h,rx:8,fill:color,class:'visual-charts-venn-card'},svg);
     text(x+13,y+25,label,18,650,'#272727');
   };
   text(490,47,cfg.title,29,750,'currentColor','middle');
@@ -233,12 +233,13 @@ function renderWorldMachine(source,host){
 
 module.exports=class VisualCharts extends Plugin {
   onload(){
-    this.registerMarkdownCodeBlockProcessor('world-machine',(source,el)=>{
-      try{renderWorldMachine(source,el);}
-      catch(error){el.empty();el.createEl('pre',{text:'World / Machine: '+error.message,cls:'visual-charts-error'});}
-    });
     this.registerMarkdownCodeBlockProcessor('visual-chart',(source,el)=>{
-      try{render(source,el);}
+      try{
+        const kind=source.match(/^\s*type\s*:\s*([^\r\n#]+)/m);
+        const type=kind?kind[1].trim().replace(/^['\"]|['\"]$/g,''):'pie-3d';
+        if(type==='venn')renderVenn(source,el);
+        else render(source,el);
+      }
       catch(error){el.empty();el.createEl('pre',{text:'Visual Charts: '+error.message,cls:'visual-charts-error'});}
     });
   }
