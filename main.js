@@ -205,18 +205,54 @@ function renderVenn(source,host){
     const g=slab(svg,x,y,w,h,8,color,raised?5:0);
     text(x+13,y+25,label,18,650,'#272727','start',g);
   };
-  const oval=(cx,cy,rx,ry,fill,opacity)=>{
-    const g=el('g',{class:'visual-charts-venn-domain'},svg);
-    if(raised){
-      el('ellipse',{cx,cy:cy+depth,rx,ry,fill:darkenColor(fill,.61)},g);
-      el('ellipse',{cx,cy:cy+depth*.5,rx,ry,fill:darkenColor(fill,.79)},g);
+  // Split the intersecting ellipses into three *independent* closed surfaces.
+  // Their boundary arcs meet at the same two intersection points: no transparency
+  // overlay, no double-thickness at the intersection.
+  const A={cx:329,cy:268,rx:249,ry:124},B={cx:656,cy:268,rx:235,ry:107};
+  const upper=(e,x)=>e.ry*Math.sqrt(Math.max(0,1-((x-e.cx)/e.rx)**2));
+  let lo=Math.max(A.cx-A.rx,B.cx-B.rx),hi=Math.min(A.cx+A.rx,B.cx+B.rx);
+  for(let i=0;i<65;i++){
+    const mid=(lo+hi)/2;
+    if(upper(A,mid)>upper(B,mid))lo=mid;else hi=mid;
+  }
+  const cross=(lo+hi)/2;
+  const ta=Math.acos((cross-A.cx)/A.rx),tb=Math.acos((cross-B.cx)/B.rx);
+  const boundary=(ellipse,from,to)=>{
+    const count=Math.ceil(Math.abs(to-from)/.025);
+    const points=[];
+    for(let i=0;i<=count;i++){
+      const angle=from+(to-from)*i/count;
+      points.push([(ellipse.cx+ellipse.rx*Math.cos(angle)).toFixed(3),
+                   (ellipse.cy+ellipse.ry*Math.sin(angle)).toFixed(3)]);
     }
-    el('ellipse',{cx,cy,rx,ry,fill,'fill-opacity':opacity,stroke:darkenColor(fill,.46),'stroke-width':2},g);
+    return points;
   };
+  const polygon=(parts)=>'M '+parts.flat().map(pt=>pt.join(' ')).join(' L ')+' Z';
+  const regions=[
+    {name:'environment',color:'#bcbcbc',
+      d:polygon([boundary(A,-ta,ta-2*Math.PI),boundary(B,tb,2*Math.PI-tb)])},
+    {name:'system',color:'#8789eb',
+      d:polygon([boundary(B,-tb,tb),boundary(A,ta,-ta)])},
+    {name:'intersection',color:'#a2a3d4',
+      d:polygon([boundary(A,-ta,ta),boundary(B,tb,2*Math.PI-tb)])}
+  ];
+  const regionLayer=el('g',{class:'visual-charts-venn-regions'},svg);
+  if(raised&&depth>0){
+    // Like Pie Chart: two continuous silhouette layers, painted BEFORE all top faces.
+    for(const region of regions){
+      const g=el('g',{class:'visual-charts-venn-depth'},regionLayer);
+      el('path',{d:region.d,transform:'translate(0 '+depth+')',
+        fill:darkenColor(region.color,.61)},g);
+      el('path',{d:region.d,transform:'translate(0 '+(depth*.5)+')',
+        fill:darkenColor(region.color,.79)},g);
+    }
+  }
+  for(const region of regions){
+    el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
+      'stroke-width':1.35,'stroke-linejoin':'round',
+      class:'visual-charts-venn-region visual-charts-venn-'+region.name},regionLayer);
+  }
   text(490,47,cfg.title,29,750,'currentColor','middle');
-  // The two transparent domains retain a clearly legible shared region.
-  oval(329,268,249,124,'#bcbcbc',.72);
-  oval(656,268,235,107,'#8789eb',.79);
   text(288,258,cfg.environment,31,630,'#252525','middle');
   text(697,277,cfg.system,31,630,'#202038','middle');
   card(38,82,220,64,cfg.phenomena,'#ffe7da');

@@ -44,3 +44,7 @@
 .visual-charts-venn-slab,.visual-charts-venn-example { transition:transform 150ms ease-out; transform-box:fill-box; transform-origin:center; }
 .visual-charts-venn-slab:hover,.visual-charts-venn-example:hover { transform:translateY(-3px); }
 @media(prefers-reduced-motion:reduce) { .visual-charts-venn-slab,.visual-charts-venn-example {transition:none;} }
+
+/* Venn v0.7: three explicit regions, raised like the pie chart. */
+.visual-charts-venn-depth path:first-child {filter:drop-shadow(0 3px 3px rgba(0,0,0,.20));}
+.visual-charts-venn-region {vector-effect:non-scaling-stroke;}

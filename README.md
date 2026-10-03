@@ -64,3 +64,5 @@ specification: The reverse thrust shall be enabled if and only if wheel rotation
 Each field is optional. Use `|` to insert a manual line break in diagram labels. The SVG remains theme-aware and scales to the note width, with horizontal scrolling on narrower screens.
 
 Venn supports `style: flat` (default) or `style: raised`, with a configurable `depth` (0–14px) for layered ellipses and raised cards.
+
+In `style: raised`, Venn uses three separately rendered SVG regions (left-only, intersection, right-only), with a mixed-color overlap and layered depth. `style: flat` shows the same three regions without extrusion.
