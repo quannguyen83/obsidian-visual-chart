@@ -241,6 +241,21 @@ function renderVenn(source,host){
   // Moving an entire piece to the end previously placed its dark side wall over
   // a neighbouring top surface (especially visible at the intersection).
   const depthLayer=el('g',{class:'visual-charts-venn-depth-layer'},regionLayer);
+  // A single continuous silhouette avoids seams where neighbouring bottoms meet.
+  if(raised&&depth>0){
+    const shell=regions.map(r=>r.d).join(' ');
+    const gradId=marker.getAttribute('id')+'-shell';
+    const gradient=el('linearGradient',{id:gradId,x1:'0%',y1:'0%',x2:'100%',y2:'0%'},defs);
+    for(const [offset,color] of [['0%',darkenColor('#bcbcbc',.70)],
+      ['49%',darkenColor('#a2a3d4',.70)],['100%',darkenColor('#8789eb',.70)]]){
+      el('stop',{offset,'stop-color':color},gradient);
+    }
+    const steps=Math.ceil(depth*2);
+    for(let i=steps;i>=0;i--){
+      el('path',{d:shell,transform:'translate(0 '+(depth*i/steps).toFixed(3)+')',
+        fill:'url(#'+gradId+')',class:'visual-charts-venn-shell'},depthLayer);
+    }
+  }
   const faceLayer=el('g',{class:'visual-charts-venn-face-layer'},regionLayer);
   const regionGroups=[];
   let selectedRegion=null;
@@ -251,15 +266,13 @@ function renderVenn(source,host){
     const lift=Math.max(6,depth+2)+'px';
     shadow.style.setProperty('--venn-lift',lift);
     face.style.setProperty('--venn-lift',lift);
+    shadow.style.display='none'; // The unselected chart uses the shared shell.
     if(raised&&depth>0){
-      // Solid extrusion: overlapping sub-pixel silhouettes share one uniform
-      // side color, eliminating the visible bands of the former two slabs.
-      const sideColor=darkenColor(region.color,.70);
       const steps=Math.ceil(depth*2);
       for(let i=steps;i>=0;i--){
         el('path',{d:region.d,
           transform:'translate(0 '+(depth*i/steps).toFixed(3)+')',
-          fill:sideColor,class:'visual-charts-venn-piece-depth'},shadow);
+          fill:darkenColor(region.color,.70),class:'visual-charts-venn-piece-depth'},shadow);
       }
     }
     el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
@@ -272,11 +285,13 @@ function renderVenn(source,host){
       if(selectedRegion){
         for(const node of [selectedRegion.face,selectedRegion.shadow])node.classList.remove('is-selected');
         selectedRegion.face.setAttribute('aria-pressed','false');
+        selectedRegion.shadow.style.display='none';
       }
       selectedRegion=next;
       if(next){
         for(const node of [next.face,next.shadow])node.classList.add('is-selected');
         next.face.setAttribute('aria-pressed','true');
+        next.shadow.style.display=raised?'':'none';
         depthLayer.appendChild(next.shadow);
         faceLayer.appendChild(next.face);
       }else {
