@@ -291,7 +291,7 @@ function renderVenn(source,host){
       if(next){
         for(const node of [next.face,next.shadow])node.classList.add('is-selected');
         next.face.setAttribute('aria-pressed','true');
-        next.shadow.style.display=raised?'':'none';
+        next.shadow.style.display='none';
         depthLayer.appendChild(next.shadow);
         faceLayer.appendChild(next.face);
       }else {
