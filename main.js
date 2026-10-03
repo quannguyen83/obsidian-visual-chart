@@ -252,10 +252,15 @@ function renderVenn(source,host){
     shadow.style.setProperty('--venn-lift',lift);
     face.style.setProperty('--venn-lift',lift);
     if(raised&&depth>0){
-      el('path',{d:region.d,transform:'translate(0 '+depth+')',
-        fill:darkenColor(region.color,.61),class:'visual-charts-venn-piece-depth'},shadow);
-      el('path',{d:region.d,transform:'translate(0 '+(depth*.5)+')',
-        fill:darkenColor(region.color,.79),class:'visual-charts-venn-piece-depth'},shadow);
+      // Solid extrusion: overlapping sub-pixel silhouettes share one uniform
+      // side color, eliminating the visible bands of the former two slabs.
+      const sideColor=darkenColor(region.color,.70);
+      const steps=Math.ceil(depth*2);
+      for(let i=steps;i>=0;i--){
+        el('path',{d:region.d,
+          transform:'translate(0 '+(depth*i/steps).toFixed(3)+')',
+          fill:sideColor,class:'visual-charts-venn-piece-depth'},shadow);
+      }
     }
     el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
       'stroke-width':1.35,'stroke-linejoin':'round',
