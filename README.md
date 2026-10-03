@@ -47,6 +47,8 @@ Use the editable SVG Venn renderer in a note:
 ````markdown
 ```visual-chart
 type: venn
+style: raised
+depth: 8
 title: Requirements are about the real world.
 environment: Environment|real world
 system: System
@@ -60,3 +62,5 @@ specification: The reverse thrust shall be enabled if and only if wheel rotation
 ````
 
 Each field is optional. Use `|` to insert a manual line break in diagram labels. The SVG remains theme-aware and scales to the note width, with horizontal scrolling on narrower screens.
+
+Venn supports `style: flat` (default) or `style: raised`, with a configurable `depth` (0–14px) for layered ellipses and raised cards.

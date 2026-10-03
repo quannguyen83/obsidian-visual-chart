@@ -161,7 +161,7 @@ function render(source,host){
 function renderVenn(source,host){
   host.empty();host.addClass('visual-charts','visual-charts-venn');
   const cfg={
-    title:'Requirements are about the real world.',
+    title:'Requirements are about the real world.',style:'flat',depth:'8',
     environment:'Environment|real world',system:'System',
     phenomena:'Phenomena of|the real world',shared:'Shared|phenomena',
     sensors:'Sensors and|actuators',
@@ -176,6 +176,8 @@ function renderVenn(source,host){
       cfg[match[1]]=match[2].replace(/^['"]|['"]$/g,'');
     }
   }
+  const raised=cfg.style==='raised';
+  const depth=raised?Math.max(0,Math.min(14,Number(cfg.depth)||8)):0;
   const svg=el('svg',{viewBox:'0 0 980 650',role:'img','aria-label':cfg.title,
     class:'visual-charts-venn-svg'},host);
   const defs=el('defs',{},svg),marker=el('marker',{id:'venn-arrow-'+Math.random().toString(36).slice(2),
@@ -190,16 +192,31 @@ function renderVenn(source,host){
   };
   const line=(x1,y1,x2,y2)=>el('line',{x1,y1,x2,y2,stroke:'currentColor','stroke-width':1.65,
     'marker-end':arrow,class:'visual-charts-venn-arrow'},svg);
+  const slab=(parent,x,y,w,h,rx,fill,d=depth)=>{
+    const g=el('g',{class:'visual-charts-venn-slab'},parent);
+    if(d>0){
+      el('rect',{x,y:y+d,width:w,height:h,rx,fill:darkenColor(fill,.67)},g);
+      el('rect',{x,y:y+d*.52,width:w,height:h,rx,fill:darkenColor(fill,.82)},g);
+    }
+    el('rect',{x,y,width:w,height:h,rx,fill,stroke:darkenColor(fill,.65),'stroke-width':1.5},g);
+    return g;
+  };
   const card=(x,y,w,h,label,color)=>{
-    el('rect',{x,y,width:w,height:h,rx:8,fill:color,class:'visual-charts-venn-card'},svg);
-    text(x+13,y+25,label,18,650,'#272727');
+    const g=slab(svg,x,y,w,h,8,color,raised?5:0);
+    text(x+13,y+25,label,18,650,'#272727','start',g);
+  };
+  const oval=(cx,cy,rx,ry,fill,opacity)=>{
+    const g=el('g',{class:'visual-charts-venn-domain'},svg);
+    if(raised){
+      el('ellipse',{cx,cy:cy+depth,rx,ry,fill:darkenColor(fill,.61)},g);
+      el('ellipse',{cx,cy:cy+depth*.5,rx,ry,fill:darkenColor(fill,.79)},g);
+    }
+    el('ellipse',{cx,cy,rx,ry,fill,'fill-opacity':opacity,stroke:darkenColor(fill,.46),'stroke-width':2},g);
   };
   text(490,47,cfg.title,29,750,'currentColor','middle');
   // The two transparent domains retain a clearly legible shared region.
-  el('ellipse',{cx:329,cy:268,rx:249,ry:124,fill:'#bcbcbc','fill-opacity':'.62',
-    stroke:'currentColor','stroke-width':'1.6'},svg);
-  el('ellipse',{cx:656,cy:268,rx:235,ry:107,fill:'#8789eb','fill-opacity':'.79',
-    stroke:'currentColor','stroke-width':'1.6'},svg);
+  oval(329,268,249,124,'#bcbcbc',.72);
+  oval(656,268,235,107,'#8789eb',.79);
   text(288,258,cfg.environment,31,630,'#252525','middle');
   text(697,277,cfg.system,31,630,'#202038','middle');
   card(38,82,220,64,cfg.phenomena,'#ffe7da');
@@ -210,7 +227,11 @@ function renderVenn(source,host){
   line(726,143,539,246);
   // Examples are wrapped as foreignObject-free SVG paragraphs for portability.
   const example=(x,y,w,heading,body)=>{
-    const g=el('g',{},svg);
+    const g=el('g',{class:'visual-charts-venn-example'},svg);
+    if(raised){
+      el('rect',{x,y:y+6,width:w,height:155,rx:12,fill:'var(--background-modifier-border)'},g);
+      el('rect',{x,y:y+3,width:w,height:155,rx:12,fill:'var(--background-secondary-alt)'},g);
+    }
     el('rect',{x,y,width:w,height:155,rx:12,fill:'var(--background-secondary)',
       stroke:'var(--background-modifier-border)'},g);
     text(x+14,y+27,heading,19,750,'#df8951','start',g);

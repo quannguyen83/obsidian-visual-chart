@@ -39,3 +39,8 @@
 .visual-charts-venn-text {font-family:var(--font-text),sans-serif;}
 .visual-charts-venn-card {stroke:rgba(0,0,0,.09);stroke-width:1;}
 .visual-charts-venn-arrow {color:var(--text-normal);}
+
+/* Venn raised style: preserve readable overlap while lifting informational cards. */
+.visual-charts-venn-slab,.visual-charts-venn-example { transition:transform 150ms ease-out; transform-box:fill-box; transform-origin:center; }
+.visual-charts-venn-slab:hover,.visual-charts-venn-example:hover { transform:translateY(-3px); }
+@media(prefers-reduced-motion:reduce) { .visual-charts-venn-slab,.visual-charts-venn-example {transition:none;} }
