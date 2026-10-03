@@ -272,15 +272,15 @@ function renderVenn(source,host){
       if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}
     });
   }
-  text(490,47,cfg.title,29,750,'currentColor','middle');
+  text(490,32,cfg.title,29,750,'currentColor','middle');
   text(288,258,cfg.environment,31,630,'#252525','middle');
   text(697,277,cfg.system,31,630,'#202038','middle');
-  card(38,82,220,64,cfg.phenomena,'#ffe7da');
-  card(383,75,185,65,cfg.shared,'#ffe7da');
-  card(716,82,219,65,cfg.sensors,'#fff4d1');
-  line(256,136,262,187);
-  line(476,140,499,250);
-  line(726,143,539,246);
+  card(38,66,220,64,cfg.phenomena,'#ffe7da');
+  card(383,59,185,65,cfg.shared,'#ffe7da');
+  card(716,66,219,65,cfg.sensors,'#fff4d1');
+  line(256,120,262,187);
+  line(476,124,499,250);
+  line(726,127,539,246);
   // Examples are wrapped as foreignObject-free SVG paragraphs for portability.
   const example=(x,y,w,heading,body)=>{
     const g=el('g',{class:'visual-charts-venn-example'},svg);

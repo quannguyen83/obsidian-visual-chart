@@ -1,7 +1,7 @@
 {
   "id": "visual-charts",
   "name": "Visual Charts",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "minAppVersion": "1.5.0",
   "description": "Lightweight interactive 2.5D exploded SVG pie charts from Markdown code blocks.",
   "author": "Local",
