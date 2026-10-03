@@ -237,38 +237,50 @@ function renderVenn(source,host){
       d:polygon([boundary(A,-ta,ta),boundary(B,tb,2*Math.PI-tb)])}
   ];
   const regionLayer=el('g',{class:'visual-charts-venn-regions'},svg);
+  // Keep ALL depth silhouettes below ALL top faces, regardless of selection.
+  // Moving an entire piece to the end previously placed its dark side wall over
+  // a neighbouring top surface (especially visible at the intersection).
+  const depthLayer=el('g',{class:'visual-charts-venn-depth-layer'},regionLayer);
+  const faceLayer=el('g',{class:'visual-charts-venn-face-layer'},regionLayer);
   const regionGroups=[];
   let selectedRegion=null;
   for(const region of regions){
-    // Group the face AND its depth: they lift as one physical slice.
-    const g=el('g',{class:'visual-charts-venn-piece',tabindex:'0',
-      role:'button','aria-label':region.name+' region','aria-pressed':'false'},regionLayer);
-    g.style.setProperty('--venn-lift',Math.max(6,depth+2)+'px');
+    const shadow=el('g',{class:'visual-charts-venn-shadow-piece'},depthLayer);
+    const face=el('g',{class:'visual-charts-venn-piece',tabindex:'0',
+      role:'button','aria-label':region.name+' region','aria-pressed':'false'},faceLayer);
+    const lift=Math.max(6,depth+2)+'px';
+    shadow.style.setProperty('--venn-lift',lift);
+    face.style.setProperty('--venn-lift',lift);
     if(raised&&depth>0){
       el('path',{d:region.d,transform:'translate(0 '+depth+')',
-        fill:darkenColor(region.color,.61),class:'visual-charts-venn-piece-depth'},g);
+        fill:darkenColor(region.color,.61),class:'visual-charts-venn-piece-depth'},shadow);
       el('path',{d:region.d,transform:'translate(0 '+(depth*.5)+')',
-        fill:darkenColor(region.color,.79),class:'visual-charts-venn-piece-depth'},g);
+        fill:darkenColor(region.color,.79),class:'visual-charts-venn-piece-depth'},shadow);
     }
     el('path',{d:region.d,fill:region.color,stroke:darkenColor(region.color,.70),
       'stroke-width':1.35,'stroke-linejoin':'round',
-      class:'visual-charts-venn-region visual-charts-venn-'+region.name},g);
-    regionGroups.push(g);
+      class:'visual-charts-venn-region visual-charts-venn-'+region.name},face);
+    const piece={face,shadow};
+    regionGroups.push(piece);
     const toggle=()=>{
-      const next=selectedRegion===g?null:g;
+      const next=selectedRegion===piece?null:piece;
       if(selectedRegion){
-        selectedRegion.classList.remove('is-selected');
-        selectedRegion.setAttribute('aria-pressed','false');
+        for(const node of [selectedRegion.face,selectedRegion.shadow])node.classList.remove('is-selected');
+        selectedRegion.face.setAttribute('aria-pressed','false');
       }
       selectedRegion=next;
       if(next){
-        next.classList.add('is-selected');
-        next.setAttribute('aria-pressed','true');
-        regionLayer.appendChild(next);
-      }else regionGroups.forEach(item=>regionLayer.appendChild(item));
+        for(const node of [next.face,next.shadow])node.classList.add('is-selected');
+        next.face.setAttribute('aria-pressed','true');
+        depthLayer.appendChild(next.shadow);
+        faceLayer.appendChild(next.face);
+      }else {
+        regionGroups.forEach(item=>depthLayer.appendChild(item.shadow));
+        regionGroups.forEach(item=>faceLayer.appendChild(item.face));
+      }
     };
-    g.addEventListener('click',toggle);
-    g.addEventListener('keydown',event=>{
+    face.addEventListener('click',toggle);
+    face.addEventListener('keydown',event=>{
       if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle();}
     });
   }

@@ -56,3 +56,8 @@
 .visual-charts-venn-piece:focus-visible { outline:none; filter:drop-shadow(0 0 3px var(--interactive-accent)); }
 .visual-charts-venn-piece.is-selected:focus-visible { filter:drop-shadow(0 7px 5px rgba(0,0,0,.26)); }
 @media(prefers-reduced-motion:reduce) { .visual-charts-venn-piece {transition:none;} }
+
+/* v0.7.3: shadows remain below every top surface, including the selected one. */
+.visual-charts-venn-shadow-piece { pointer-events:none; transition:transform 160ms ease; }
+.visual-charts-venn-shadow-piece.is-selected { transform:translateY(calc(-1 * var(--venn-lift,10px))); }
+@media(prefers-reduced-motion:reduce) { .visual-charts-venn-shadow-piece {transition:none;} }
