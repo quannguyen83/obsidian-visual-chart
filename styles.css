@@ -61,3 +61,12 @@
 .visual-charts-venn-shadow-piece { pointer-events:none; transition:transform 160ms ease; }
 .visual-charts-venn-shadow-piece.is-selected { transform:translateY(calc(-1 * var(--venn-lift,10px))); }
 @media(prefers-reduced-motion:reduce) { .visual-charts-venn-shadow-piece {transition:none;} }
+
+/* v0.7.7: lift only the selected top face. Shared baseline depth stays fixed. */
+.visual-charts-venn-piece.is-selected,
+.visual-charts-venn-piece.is-selected:focus-visible {
+  transform:translateY(calc(-1 * var(--venn-lift,5px)));
+  filter:drop-shadow(0 5px 0 var(--venn-side-color))
+         drop-shadow(0 3px 3px rgba(0,0,0,.17));
+}
+.visual-charts-venn-shadow-piece.is-selected { transform:none; }
