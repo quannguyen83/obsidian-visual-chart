@@ -1,0 +1,7 @@
+*.backup.js
+*.backup.css
+main.v*.js
+styles.v*.css
+node_modules/
+.DS_Store
+Thumbs.db

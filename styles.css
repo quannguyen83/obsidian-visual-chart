@@ -1,0 +1,34 @@
+/* Visual Charts v0.5: single circular face + colored offset silhouette depth. */
+.visual-charts { max-width:680px; margin:1.2rem auto; padding:12px; text-align:center; }
+.visual-charts-title { font-weight:650; font-size:1.05rem; margin-bottom:4px; }
+.visual-charts-svg { width:100%; height:auto; max-height:470px; overflow:visible; display:block; }
+.visual-charts-slice { cursor:pointer; outline:none; }
+.visual-charts-moving { transition:transform 150ms ease-out; }
+.visual-charts-slice:hover .visual-charts-moving,
+.visual-charts-slice:focus-visible .visual-charts-moving { transform:translateY(calc(-1 * var(--lift,8px))); }
+.visual-charts-face { vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+.visual-charts-percent { font-size:20px; fill:#23252a; font-weight:700; pointer-events:none; user-select:none; }
+.visual-charts-legend { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:-18px; }
+.visual-charts-legend-item { display:inline-flex; align-items:center; gap:5px; font-size:.83rem; color:var(--text-muted); }
+.visual-charts-dot { display:inline-block; width:10px; height:10px; border-radius:2px; }
+.visual-charts-error { color:var(--text-error); white-space:pre-wrap; }
+@media(prefers-reduced-motion:reduce) { .visual-charts-moving { transition:none; } }
+
+/* Floating tooltip: contained in the chart, never intercepts the pointer. */
+.visual-charts { position:relative; }
+.visual-charts-tooltip {
+  position:absolute; z-index:12; width:max-content; min-width:180px; max-width:230px;
+  box-sizing:border-box; padding:12px 14px; border:1px solid var(--background-modifier-border);
+  border-left:4px solid var(--tip-color,var(--interactive-accent));
+  border-radius:11px; background:var(--background-primary);
+  box-shadow:0 3px 0 var(--background-modifier-border),0 10px 20px rgba(0,0,0,.18);
+  color:var(--text-normal); pointer-events:none; opacity:0; visibility:hidden;
+  transition:opacity 150ms ease,visibility 150ms ease; text-align:left;
+}
+.visual-charts-tooltip.is-visible { opacity:1; visibility:visible; }
+.visual-charts-tooltip-header { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+.visual-charts-tooltip-dot { width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+.visual-charts-tooltip-name { font-weight:650; font-size:.88rem; }
+.visual-charts-tooltip-main { display:flex; align-items:baseline; gap:9px; }
+.visual-charts-tooltip-percent { font-size:1.7rem; font-weight:750; line-height:1.1; font-variant-numeric:tabular-nums; }
+.visual-charts-tooltip-value { color:var(--text-muted); font-size:.78rem; }
